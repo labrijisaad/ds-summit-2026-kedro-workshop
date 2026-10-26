@@ -1,0 +1,23 @@
+# Here you can define all your datasets by using simple YAML syntax.
+#
+# Documentation for this file format can be found in "The Data Catalog"
+# Link: https://docs.kedro.org/en/stable/catalog-data/introduction/#data-catalog
+#
+# Was INPUTS / OUTPUTS in notebooks/01_clean_notebook.
+# Any dataset not declared here is kept in memory and lost at the end of the run.
+
+members:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/members.csv
+
+checkins:
+  type: pandas.ParquetDataset
+  filepath: data/01_raw/checkins.parquet
+
+# TODO: declare what you want to keep after `kedro run`:
+#   - the model input table
+#   - the test data         (data/05_model_input/test_data.csv)
+#   - the trained model     (data/06_models/churn_classifier.pkl)
+#   - the metrics           (data/08_reporting/metrics.json)
+#   - the three plots       (data/08_reporting/*.png)
+# Dataset types: https://docs.kedro.org/projects/kedro-datasets/en/latest/

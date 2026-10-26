@@ -1,0 +1,6 @@
+# Every setting the pipelines use. Read in a node as "params:<name>".
+#
+# TODO: move PROCESSING_CONFIG and TRAINING_CONFIG from
+# notebooks/01_clean_notebook here, e.g.
+#
+# churn_window_days: 30

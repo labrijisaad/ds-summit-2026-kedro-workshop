@@ -1,0 +1,47 @@
+[build-system]
+requires = [
+    "setuptools",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+requires-python = ">=3.11,<3.14"
+name = "gym_churn"
+readme = "README.md"
+dynamic = [
+    "version",
+]
+dependencies = [
+    "ipython>=8.10",
+    "jupyterlab>=3.0",
+    "notebook",
+    "kedro>=1.7.0",
+    "kedro-datasets>=9.6.0",
+    "kedro-viz>=12.5.0",
+    "pandas",
+    "pyarrow",
+    "matplotlib",
+    "scikit-learn",
+]
+
+[project.scripts]
+gym-churn = "gym_churn.__main__:main"
+
+[project.entry-points."kedro.hooks"]
+
+[tool.setuptools.dynamic.version]
+attr = "gym_churn.__version__"
+
+[tool.setuptools.packages.find]
+where = [
+    "src",
+]
+namespaces = false
+
+[tool.kedro]
+package_name = "gym_churn"
+project_name = "gym churn"
+kedro_init_version = "1.7.0"
+tools = "['Data Structure']"
+example_pipeline = "False"
+source_dir = "src"
