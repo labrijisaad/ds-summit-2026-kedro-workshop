@@ -40,6 +40,8 @@ Step 4 — Turn it into a Kedro project
 Done   — kedro run gives the notebook's AUC, kedro viz run shows the full graph.
 ```
 
+> Already in Step 4? Jump to [Quick Reference](#quick-reference)
+
 ## Setup
 
 Do this **before the session**. If something fails, ask before the workshop starts.
@@ -78,9 +80,9 @@ https://code.visualstudio.com/download — with the **Python** and **Jupyter** e
 </details>
 
 ```sh
-git clone <repo-url>
-cd gym-churn-workshop
-uv sync
+git clone https://github.com/labrijisaad/ds-summit-2026-kedro-workshop.git
+cd ds-summit-2026-kedro-workshop
+uv sync --group dev
 
 # activate — macOS / Linux
 source .venv/bin/activate
@@ -139,7 +141,7 @@ Kedro's Spaceflights example, shown in the presentation. Create it **outside** t
 cd ..
 kedro new --starter spaceflights-pandas --name spaceflights
 cd spaceflights
-uv sync
+uv sync --group dev
 uv run kedro run
 uv run kedro viz run
 ```
@@ -148,7 +150,10 @@ Look at `conf/base/catalog.yml`, `conf/base/parameters.yml`, and `nodes.py` / `p
 
 ## Step 2 — Run the messy notebook
 
-The notebook you inherited. Open `notebooks/00_messy_notebook.ipynb` — in VS Code, **Select Kernel** → `.venv`; or run `uv run jupyter lab`.
+The notebook you inherited. Open it in one of two ways:
+
+- **VS Code** — open `notebooks/00_messy_notebook.ipynb`, click **Select Kernel** → `.venv`
+- **JupyterLab** — run `uv run jupyter lab` in your terminal, then open `notebooks/00_messy_notebook.ipynb`
 
 1. Run it top to bottom. The data-loading cell fails — fix it.
 2. Continue until the model trains and the charts appear.
@@ -162,7 +167,7 @@ Open `notebooks/01_clean_notebook.ipynb`. It is provided to you: the messy code 
 
 ## Step 4 — Turn it into a Kedro project
 
-**Done when** `kedro run` gives the same AUC as the clean notebook and `kedro viz run` shows the three pipelines connected.
+**Done when** `kedro run` prints **AUC ≈ 0.6512** and `kedro viz run` shows the three pipelines connected.
 
 | Pipeline | What it does |
 |---|---|
@@ -252,9 +257,14 @@ Several return values → a list of outputs: `outputs=["X_train", "X_test", "y_t
 
 ## Going Further
 
+<details>
+<summary><b>Click to expand</b></summary>
+
 - **Versioning** — add `versioned: true` to the model in `catalog.yml`, run twice, look at `data/06_models/`.
 - **Metrics history** — version `metrics` too, run with different `--params`, compare the files.
 - **Namespaces** — train the same pipeline with two sets of hyperparameters.
+
+</details>
 
 ## Documentation
 
@@ -269,7 +279,7 @@ Several return values → a list of outputs: `outputs=["X_train", "X_test", "y_t
 
 ## Solution
 
-The solution will be shared 15 minutes before the end of the workshop.
+The solution repo is at **[github.com/labrijisaad/ds-summit-2026-kedro-workshop-solutions](https://github.com/labrijisaad/ds-summit-2026-kedro-workshop-solutions)** — it is private for now and will be made public **15 minutes before the end of the workshop**.
 
 <br>
 <hr style="border-width:2px;border-color:darkred">

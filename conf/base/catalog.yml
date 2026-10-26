@@ -14,10 +14,30 @@ checkins:
   type: pandas.ParquetDataset
   filepath: data/01_raw/checkins.parquet
 
-# TODO: declare what you want to keep after `kedro run`:
-#   - the model input table
-#   - the test data         (data/05_model_input/test_data.csv)
-#   - the trained model     (data/06_models/churn_classifier.pkl)
-#   - the metrics           (data/08_reporting/metrics.json)
-#   - the three plots       (data/08_reporting/*.png)
+# TODO: declare what you want to keep after `kedro run`.
 # Dataset types: https://docs.kedro.org/projects/kedro-datasets/en/latest/
+
+# -- 03_primary ----------------------------------------------------------------
+
+# model_input_table:
+#   type: pandas.ParquetDataset
+#   filepath: data/03_primary/model_input_table.parquet
+
+# -- 05_model_input ------------------------------------------------------------
+
+# X_train:
+#   type: pandas.ParquetDataset
+#   filepath: data/05_model_input/X_train.parquet
+
+# -- 06_models -----------------------------------------------------------------
+
+# churn_model:
+#   type: pickle.PickleDataset
+#   filepath: data/06_models/churn_classifier.pkl
+#   versioned: true
+
+# -- 08_reporting --------------------------------------------------------------
+
+# metrics:
+#   type: json.JSONDataset
+#   filepath: data/08_reporting/metrics.json

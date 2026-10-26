@@ -4,3 +4,11 @@
 # notebooks/01_clean_notebook here, e.g.
 #
 # churn_window_days: 30
+
+# -- data_processing -----------------------------------------------------------
+
+churn_window_days: 30
+
+# -- model_training ------------------------------------------------------------
+
+# TODO: add the rest of the training config here

@@ -1,27 +1,41 @@
+# Build backend
 [build-system]
 requires = [
     "setuptools",
 ]
 build-backend = "setuptools.build_meta"
 
+# Project metadata
 [project]
 requires-python = ">=3.11,<3.14"
 name = "gym_churn"
+description = "Hands-on workshop: turn a messy notebook into a production-ready Kedro project."
 readme = "README.md"
 dynamic = [
     "version",
 ]
+
+# Core dependencies
 dependencies = [
+    # kedro core + datasets + viz
+    "kedro>=1.7.0",
+    "kedro-datasets>=9.6.0",   # pandas, pickle, json, matplotlib dataset types
+    "kedro-viz>=12.5.0",       # pipeline graph at http://127.0.0.1:4141/
+
+    # data & ml
+    "pandas",
+    "pyarrow",                 # required for parquet support
+    "matplotlib",
+    "scikit-learn",
+]
+
+# Dev dependencies  ->  uv sync --group dev
+[dependency-groups]
+dev = [
+    # notebook interface
     "ipython>=8.10",
     "jupyterlab>=3.0",
     "notebook",
-    "kedro>=1.7.0",
-    "kedro-datasets>=9.6.0",
-    "kedro-viz>=12.5.0",
-    "pandas",
-    "pyarrow",
-    "matplotlib",
-    "scikit-learn",
 ]
 
 [project.scripts]
@@ -38,9 +52,10 @@ where = [
 ]
 namespaces = false
 
+# Kedro project settings
 [tool.kedro]
 package_name = "gym_churn"
-project_name = "gym churn"
+project_name = "Gym Churn Workshop"
 kedro_init_version = "1.7.0"
 tools = "['Data Structure']"
 example_pipeline = "False"
