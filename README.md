@@ -10,7 +10,7 @@
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://docs.astral.sh/uv/)
 
-**Saad Labriji** - ML Engineer at AXA Direct Assurance (France)
+**Saad Labriji** - ML / GenAI Engineer at AXA Direct Assurance (France)
 
 <br>
 <hr style="border-width:2px;border-color:darkred">
@@ -18,13 +18,9 @@
 
 ## Overview
 
-You inherit a gym churn model written in a messy notebook. Your job: turn it into a
-Kedro project that **runs with one command**, keeps every path and setting in **config**,
-and shows its whole flow as a **graph**.
+You inherit a gym churn model written in a messy notebook. Your job: turn it into a Kedro project that **runs with one command**, keeps every path and setting in **config**, and shows its whole flow as a **graph**.
 
-**Kedro** is an open source Python framework for reproducible, maintainable data and ML
-pipelines. At AXA Direct Assurance, a dozen models run on Kedro in Databricks, with
-automated retraining and versioned models in production.
+**Kedro** is an open source Python framework for reproducible, maintainable data and ML pipelines. At AXA Direct Assurance, a dozen models run on Kedro in Databricks, with automated retraining and versioned models in production.
 
 ## Workshop Flow
 
@@ -40,11 +36,7 @@ Four steps - click to jump.
 
 **Done when** `kedro run` reproduces the notebook's AUC and `kedro viz run` shows the full graph.
 
-Also here: **[The use case](#the-use-case---gym-churn)** &middot;
-**[Quick reference](#quick-reference)** &middot;
-**[Going further](#going-further)** &middot;
-**[Documentation](#documentation)** &middot;
-**[Solution](#solution)**
+Also here: **[Quick reference](#quick-reference)** &middot; **[Going further](#going-further)** &middot; **[Documentation](#documentation)** &middot; **[Solution](#solution)**
 
 ## Setup
 
@@ -55,8 +47,7 @@ Do this **before the session**. If something fails, ask before the workshop star
 
 ### uv
 
-[uv](https://docs.astral.sh/uv/) installs Python (3.11 to 3.13) and all dependencies for
-you - no separate Python installation needed.
+[uv](https://docs.astral.sh/uv/) installs Python (3.11 to 3.13) and all dependencies for you - no separate Python installation needed.
 
 Follow the one-line installer for your OS here:
 **https://docs.astral.sh/uv/getting-started/installation/**
@@ -93,18 +84,70 @@ uv run kedro info      # prints the Kedro logo
 > the environment yourself. If you prefer to activate it:
 > `source .venv/bin/activate` (macOS / Linux) or `.venv\Scripts\activate` (Windows).
 
-## The Use Case - Gym Churn
+> **🛑 STOP** - do not start Step 1 until it is announced.
+
+## Step 1 - Get familiar with Kedro *(optional)*
+
+> **This step is done live during the presentation.** You don't have to run it yourself -
+> watch, then come back to it later if you want to poke around on your own.
+
+The goal here is **not to build anything**. It is to open an already-finished Kedro project, run it, and understand what is going on: where the data is declared, where the settings live, how the steps connect, and what the graph looks like. Once that clicks, Step 4 is mostly typing.
+
+We use Kedro's official **Spaceflights** example. Create it **outside** this repository:
+
+```sh
+cd ..
+uvx kedro new --starter spaceflights-pandas --name spaceflights
+cd spaceflights
+uv sync --group dev
+uv run kedro run
+uv run kedro viz run
+```
+
+<details>
+<summary><b>Hint - what to look at, in this order</b></summary>
+
+| Look at | And ask yourself |
+|---|---|
+| The `kedro run` logs | Nobody wrote this execution order - where does it come from? |
+| `conf/base/catalog.yml` | Every dataset has a **name**, a **type** and a **path**. Notice there is no `read_csv` anywhere in the code. |
+| `conf/base/parameters.yml` | Every setting, named and in one place. No magic numbers in the code. |
+| `src/spaceflights/pipelines/*/nodes.py` | Plain Python functions. No Kedro imports, no file I/O - they could be unit-tested as-is. |
+| `src/spaceflights/pipelines/*/pipeline.py` | Each function wrapped in a `Node` with named `inputs` and `outputs`. **This is the only place the order is implied.** |
+| Kedro-Viz at http://127.0.0.1:4141/ | Click a node to see its code. Click a dataset to see its type and path. |
+
+The key idea: the **output name of one node is the input name of the next**. That is it - that is how Kedro builds the graph.
+
+</details>
+
+> **🛑 STOP** - do not start Step 2 until it is announced.
+
+## Step 2 - Run the messy notebook
+
+Come back to the workshop repo:
+
+```sh
+cd ../ds-summit-2026-kedro-workshop
+```
+
+The notebook you inherited. Open it in one of two ways:
+
+- **VS Code** - open `notebooks/00_messy_notebook.ipynb`, click **Select Kernel** and pick `.venv`
+- **JupyterLab** - run `uv run jupyter lab`, then open `notebooks/00_messy_notebook.ipynb`
+
+1. Run it top to bottom. The data-loading cell fails - fix it.
+2. Continue until the model trains and the charts appear.
+3. Answer the pinned questions **in your head first**, then open the reveals.
+
+### The use case - Gym Churn
 
 A Paris gym chain wants to find the members who are about to leave.
 
-- **Target** - `churned = 1` if the member has no check-in in the last 30 days.
-  It is computed from the check-ins; there is no label column in the data.
-- **Features** - built **only** from check-ins older than 30 days (days 31 to 90), so the
-  target never leaks into the inputs.
+- **Target** - `churned = 1` if the member has no check-in in the last 30 days. It is computed from the check-ins; there is no label column in the data.
+- **Features** - built **only** from check-ins older than 30 days (days 31 to 90), so the target never leaks into the inputs.
 - **Model** - random forest, scored with AUC on a 20% test set.
 
-> **Don't focus on the ML.** The point of today is refactoring, not modelling.
-> Do not try to improve the AUC - reproduce it with a clean structure.
+> **Don't focus on the ML.** The point of today is refactoring, not modelling. Do not try to improve the AUC - reproduce it with a clean structure.
 
 <details>
 <summary><b>The data - quick look</b></summary>
@@ -140,75 +183,19 @@ Synthetic data in `data/01_raw/`. About one member in three churns.
 
 </details>
 
-## Step 1 - Get familiar with Kedro *(optional)*
-
-> **This step is done live during the presentation.** You don't have to run it yourself -
-> watch, then come back to it later if you want to poke around on your own.
-
-The goal here is **not to build anything**. It is to open an already-finished Kedro
-project, run it, and understand what is going on: where the data is declared, where the
-settings live, how the steps connect, and what the graph looks like. Once that clicks,
-Step 4 is mostly typing.
-
-We use Kedro's official **Spaceflights** example. Create it **outside** this repository:
-
-```sh
-cd ..
-uvx kedro new --starter spaceflights-pandas --name spaceflights
-cd spaceflights
-uv sync --group dev
-uv run kedro run
-uv run kedro viz run
-```
-
-<details>
-<summary><b>Hint - what to look at, in this order</b></summary>
-
-| Look at | And ask yourself |
-|---|---|
-| The `kedro run` logs | Nobody wrote this execution order - where does it come from? |
-| `conf/base/catalog.yml` | Every dataset has a **name**, a **type** and a **path**. Notice there is no `read_csv` anywhere in the code. |
-| `conf/base/parameters.yml` | Every setting, named and in one place. No magic numbers in the code. |
-| `src/spaceflights/pipelines/*/nodes.py` | Plain Python functions. No Kedro imports, no file I/O - they could be unit-tested as-is. |
-| `src/spaceflights/pipelines/*/pipeline.py` | Each function wrapped in a `Node` with named `inputs` and `outputs`. **This is the only place the order is implied.** |
-| Kedro-Viz at http://127.0.0.1:4141/ | Click a node to see its code. Click a dataset to see its type and path. |
-
-The key idea: the **output name of one node is the input name of the next**. That is it -
-that is how Kedro builds the graph.
-
-</details>
-
-Then come back:
-
-```sh
-cd ../ds-summit-2026-kedro-workshop
-```
-
-## Step 2 - Run the messy notebook
-
-The notebook you inherited. Open it in one of two ways:
-
-- **VS Code** - open `notebooks/00_messy_notebook.ipynb`, click **Select Kernel** and pick `.venv`
-- **JupyterLab** - run `uv run jupyter lab`, then open `notebooks/00_messy_notebook.ipynb`
-
-1. Run it top to bottom. The data-loading cell fails - fix it.
-2. Continue until the model trains and the charts appear.
-3. Answer the pinned questions **in your head first**, then open the reveals.
+> **🛑 STOP** - do not start Step 3 until it is announced.
 
 ## Step 3 - Read the clean notebook
 
-Open `notebooks/01_clean_notebook.ipynb`. This one is given to you: the same code
-refactored into functions, with every path and setting declared at the top, and exactly
-the same results.
+Open `notebooks/01_clean_notebook.ipynb`. This one is given to you: the same code refactored into functions, with every path and setting declared at the top, and exactly the same results.
 
-**These functions are your Kedro nodes** - they are already copied into
-`src/gym_churn/pipelines/<pipeline>/nodes.py`.
+**These functions are your Kedro nodes** - they are already copied into `src/gym_churn/pipelines/<pipeline>/nodes.py`.
+
+> **🛑 STOP** - do not start Step 4 until it is announced.
 
 ## Step 4 - Turn it into a Kedro project
 
-This repository is your starting point. The node functions are already written - your job
-is the **configuration and the wiring**, so the project ends up looking like the
-Kedro-Viz graph shown in the presentation.
+This repository is your starting point. The node functions are already written - your job is the **configuration and the wiring**, so the project ends up looking like the Kedro-Viz graph shown in the presentation.
 
 | Pipeline | What it does |
 |---|---|
@@ -230,8 +217,7 @@ uv run kedro run --pipeline=data_processing    # one pipeline
 uv run kedro viz run                           # graph at http://127.0.0.1:4141/
 ```
 
-**Done when** `kedro run` completes, `data/08_reporting/metrics.json` contains
-**AUC = 0.6512**, and `kedro viz run` shows the three pipelines connected end to end.
+**Done when** `kedro run` completes, `data/08_reporting/metrics.json` contains **AUC = 0.6512**, and `kedro viz run` shows the three pipelines connected end to end.
 
 <details>
 <summary><b>Hint - suggested order of attack</b></summary>
@@ -253,12 +239,8 @@ After each step, `uv run kedro viz run` and check the graph grew the way you exp
 <details>
 <summary><b>Hint - two things that will trip you up</b></summary>
 
-- **Running one pipeline alone fails** with `Pipeline input(s) {'...'} not found in the
-  DataCatalog`. That dataset was never written to disk - either declare it in the catalog,
-  or run the whole project with `uv run kedro run`.
-- **`Failed to save outputs of node ...`** means the number of names in `outputs=` does
-  not match the number of values the function returns. **Read the signature in `nodes.py`
-  before wiring** - not every function returns a single object.
+- **Running one pipeline alone fails** with `Pipeline input(s) {'...'} not found in the DataCatalog`. That dataset was never written to disk - either declare it in the catalog, or run the whole project with `uv run kedro run`.
+- **`Failed to save outputs of node ...`** means the number of names in `outputs=` does not match the number of values the function returns. **Read the signature in `nodes.py` before wiring** - not every function returns a single object.
 
 </details>
 
@@ -304,8 +286,7 @@ Node(
 )
 ```
 
-The output name of one node is the input name of the next - that is how Kedro works out
-the execution order. Several return values means a list of outputs:
+The output name of one node is the input name of the next - that is how Kedro works out the execution order. Several return values means a list of outputs:
 
 ```python
 outputs = ["X_train", "X_test", "y_train", "y_test"]
@@ -352,38 +333,16 @@ Finished early? Pick one.
 <details>
 <summary><b>Click to expand</b></summary>
 
-### Easy - Versioning
-
-Add `versioned: true` to the model in `catalog.yml`, run twice, and look at what happened
-in `data/06_models/`. Which problem from the messy notebook does this fix?
-
-### Easy - Metrics history
-
-Version `metrics` as well, run a few times with different `--params`, then compare the
-files. You now have a record of which settings produced which score.
-
-### Medium - Namespaces
-
-Train the same pipeline twice with two different sets of hyperparameters, and see how it
-changes the Kedro-Viz graph.
-Docs - https://docs.kedro.org/en/stable/build/namespaces/
-
-### Hard - Deploy Kedro-Viz
-
-`kedro viz build` produces a static site in `build/` that you can host anywhere: GitHub
-Pages, Azure Static Web Apps, AWS S3 + CloudFront, GCP Cloud Storage.
-
-The **solution repository contains a working example**: the graph is built and published
-to an **Azure Static Web App**, fully automated with a **GitHub Actions CI/CD workflow**
-that redeploys on every push to `main`. Use it as a template and deploy yours wherever
-you like.
+- **Easy - Versioning.** Add `versioned: true` to the model in `catalog.yml`, run twice, and look at what happened in `data/06_models/`. Which problem from the messy notebook does this fix?
+- **Easy - Metrics history.** Version `metrics` as well, run a few times with different `--params`, then compare the files. You now have a record of which settings produced which score.
+- **Medium - Namespaces.** Train the same pipeline twice with two different sets of hyperparameters, and see how it changes the Kedro-Viz graph. Docs - https://docs.kedro.org/en/stable/build/namespaces/
+- **Hard - Deploy Kedro-Viz.** `kedro viz build` produces a static site in `build/` that you can host anywhere: GitHub Pages, Azure Static Web Apps, AWS S3 + CloudFront, GCP Cloud Storage. The **solution repository contains a working example**: the graph is built and published to an **Azure Static Web App**, fully automated with a **GitHub Actions CI/CD workflow** that redeploys on every push to `main`. Use it as a template and deploy yours wherever you like.
 
 </details>
 
 ## Documentation
 
-Kedro's docs are short, well written and full of examples - a quick look will get you
-through the wiring much faster than guessing.
+Kedro's docs are short, well written and full of examples - a quick look will get you through the wiring much faster than guessing.
 
 - Kedro concepts - https://docs.kedro.org/en/stable/getting-started/kedro_concepts/
 - Nodes - https://docs.kedro.org/en/stable/build/nodes/
@@ -399,8 +358,7 @@ through the wiring much faster than guessing.
 The full solution - including the deployed Kedro-Viz graph and its CI/CD workflow - lives at
 **[github.com/labrijisaad/ds-summit-2026-kedro-workshop-solutions](https://github.com/labrijisaad/ds-summit-2026-kedro-workshop-solutions)**.
 
-It is private for now and will be made public **about 15 minutes before the end of the
-workshop** - try it yourself first.
+It is private for now and will be made public **about 30 minutes before the end of the workshop** - try it yourself first.
 
 ## Author
 
@@ -413,6 +371,6 @@ workshop** - try it yourself first.
 <hr style="border-width:2px;border-color:darkred">
 <div align="center">
 
-**Thanks for coming - and congratulations, you just shipped a production-ready pipeline.**
+**Thanks for coming - and congratulations, you just shipped a prod-ready ML pipeline.**
 
 </div>
