@@ -1,8 +1,6 @@
 # Build backend
 [build-system]
-requires = [
-    "setuptools",
-]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 # Project metadata
@@ -11,9 +9,7 @@ requires-python = ">=3.11,<3.14"
 name = "gym_churn"
 description = "Hands-on workshop: turn a messy notebook into a production-ready Kedro project."
 readme = "README.md"
-dynamic = [
-    "version",
-]
+dynamic = ["version"]
 
 # Core dependencies
 dependencies = [
@@ -36,6 +32,10 @@ dev = [
     "ipython>=8.10",
     "jupyterlab>=3.0",
     "notebook",
+
+    # linting / formatting / git hooks
+    "ruff>=0.6",
+    "pre-commit>=3.7",
 ]
 
 [project.scripts]
@@ -47,9 +47,7 @@ gym-churn = "gym_churn.__main__:main"
 attr = "gym_churn.__version__"
 
 [tool.setuptools.packages.find]
-where = [
-    "src",
-]
+where = ["src"]
 namespaces = false
 
 # Kedro project settings
@@ -60,3 +58,12 @@ kedro_init_version = "1.7.0"
 tools = "['Data Structure']"
 example_pipeline = "False"
 source_dir = "src"
+
+# Ruff: lint + format Python only, leave notebooks and docs alone
+[tool.ruff]
+extend-exclude = ["*.ipynb", "notebooks", "data", "_assets"]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "RUF"]
+ignore = ["E501"]  # line length handled by formatter

@@ -16,8 +16,14 @@ def create_pipeline(**kwargs) -> Pipeline:
     return Pipeline(
         [
             # TODO: one Node per function in nodes.py.
-            # Hint: the inputs here are the outputs of the model_training pipeline.
-            # Hint: check each function's signature - plot_roc_curve takes the whole
-            #       metrics dict instead of a bare float.
+            #
+            # Hint: evaluate_model returns THREE values (y_pred, y_proba, metrics)
+            #       so outputs must be a list of three names.
+            #
+            # Hint: plot_roc_curve takes the whole metrics dict, not a bare float.
+            #       Check its signature in nodes.py.
+            #
+            # Hint: the inputs here are the outputs of the model_training pipeline
+            #       (churn_model, X_test, y_test).
         ]
     )

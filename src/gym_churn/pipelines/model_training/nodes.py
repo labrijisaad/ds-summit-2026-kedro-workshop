@@ -1,8 +1,4 @@
-"""
-Section 2 of notebooks/01_clean_notebook - model training.
-
-The functions are copied as-is from the notebook.
-"""
+"""Model training nodes."""
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split

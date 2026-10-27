@@ -1,9 +1,4 @@
-"""
-Section 1 of notebooks/01_clean_notebook - data processing.
-
-The functions are copied as-is from the notebook. The only difference: they
-no longer read or write files themselves - the Data Catalog does that.
-"""
+"""Data processing nodes."""
 
 from sklearn.preprocessing import LabelEncoder
 

@@ -1,10 +1,4 @@
-"""
-Section 3 of notebooks/01_clean_notebook - model evaluation.
-
-The functions are copied from the notebook. One small change:
-`plot_roc_curve` receives the whole `metrics` dict instead of a bare float,
-because a node can only consume datasets that another node produced.
-"""
+"""Model evaluation nodes."""
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -72,4 +66,4 @@ def plot_feature_importance(model, feature_cols):
     importances.plot(kind="bar", title="Feature Importance")
     plt.ylabel("importance")
     plt.tight_layout()
-    return importances, fig
+    return fig
