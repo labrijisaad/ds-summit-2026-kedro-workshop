@@ -308,7 +308,7 @@ The output name of one node is the input name of the next - that is how Kedro wo
 the execution order. Several return values means a list of outputs:
 
 ```python
-outputs=["X_train", "X_test", "y_train", "y_test"]
+outputs = ["X_train", "X_test", "y_train", "y_test"]
 ```
 
 <details>

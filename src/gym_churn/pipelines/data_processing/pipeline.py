@@ -2,7 +2,7 @@
 Data processing pipeline: raw members + check-ins -> model input table.
 """
 
-from kedro.pipeline import Node, Pipeline  # noqa: F401
+from kedro.pipeline import Node, Pipeline
 
 from .nodes import (  # noqa: F401
     build_checkin_features,

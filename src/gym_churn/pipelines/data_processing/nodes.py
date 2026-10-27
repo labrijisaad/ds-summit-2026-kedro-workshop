@@ -31,12 +31,8 @@ def build_checkin_features(members, checkins, churn_window_days):
 def clean_members(members, fill_values):
     members = members.drop_duplicates()
     members["age"] = members["age"].fillna(members["age"].median())
-    members["distance_km"] = members["distance_km"].fillna(
-        members["distance_km"].median()
-    )
-    members["contract_type"] = members["contract_type"].fillna(
-        fill_values["contract_type"]
-    )
+    members["distance_km"] = members["distance_km"].fillna(members["distance_km"].median())
+    members["contract_type"] = members["contract_type"].fillna(fill_values["contract_type"])
     members["club"] = members["club"].str.strip().str.title()
     members["signup_channel"] = members["signup_channel"].str.strip()
     return members
