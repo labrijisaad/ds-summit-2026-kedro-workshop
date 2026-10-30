@@ -18,9 +18,13 @@
 
 ## Overview
 
-You inherit a gym churn model written in a messy notebook. Your job: turn it into a Kedro project that **runs with one command**, keeps every path and setting in **config**, and shows its whole flow as a **graph**.
+You inherit a gym churn model written in a messy notebook. Your job: turn it into a Kedro
+project that **runs with one command**, keeps every path and setting in **config**, and
+shows its whole flow as a **graph** (Kedro-Viz).
 
-**Kedro** is an open source Python framework for reproducible, maintainable data and ML pipelines. At AXA Direct Assurance, a dozen models run on Kedro in Databricks, with automated retraining and versioned models in production.
+**Kedro** is an open source Python framework for reproducible, maintainable data and ML
+pipelines. At AXA Direct Assurance, a dozen models run on Kedro in Databricks, with
+automated retraining in production.
 
 ## Workshop Flow
 
@@ -28,26 +32,33 @@ Four steps - click to jump.
 
 | | Step | What you do | Time |
 |---|---|---|---|
-| 0 | **[Setup](#setup)** | Install `uv`, clone the repo, `uv sync` - **before the session** | before |
-| 1 | **[Get familiar with Kedro](#step-1---get-familiar-with-kedro-optional)** *(optional)* | Explore a ready-made Kedro project - shown live in the presentation | ~10 min |
-| 2 | **[Run the messy notebook](#step-2---run-the-messy-notebook)** | The model you inherited. Make it run, spot what would break in production | ~10 min |
-| 3 | **[Read the clean notebook](#step-3---read-the-clean-notebook)** | Same code, split into functions. These become your Kedro nodes | ~5 min |
-| 4 | **[Turn it into a Kedro project](#step-4---turn-it-into-a-kedro-project)** | Fill the catalog, the parameters and the three pipelines | ~30 min |
+| 0 | **[Setup](#setup)** | Install `uv`, clone the repo, run `uv sync` - **before the session** | before |
+| 1 | **[Get familiar with Kedro](#step-1---get-familiar-with-kedro-optional)** *(optional)* | Explore a ready-made Kedro project - shown live during the presentation | ~10 min |
+| 2 | **[Run the messy notebook](#step-2---run-the-messy-notebook)** | The model you inherited. Make it run, and spot what would break in production | ~10 min |
+| 3 | **[Read the clean notebook](#step-3---read-the-clean-notebook)** | The same code, split into functions. These become your Kedro nodes. Normally you would do this refactoring yourself, but today we want to spend the time on Kedro | ~5 min |
+| 4 | **[Turn it into a Kedro project](#step-4---turn-it-into-a-kedro-project)** | Fill in the catalog, the parameters and the three pipelines, then open Kedro-Viz | ~30 min |
 
-**Done when** `kedro run` reproduces the notebook's AUC and `kedro viz run` shows the full graph.
+**The main workshop is done when** `kedro run` reproduces the notebook's AUC and
+`kedro viz run` shows the full graph. If you finish early, there are extra challenges in
+[Going further](#going-further).
 
-Also here: **[Quick reference](#quick-reference)** &middot; **[Going further](#going-further)** &middot; **[Documentation](#documentation)** &middot; **[Solution](#solution)**
+Also useful: **[Quick Kedro reference](#quick-kedro-reference)** &middot;
+**[Going further](#going-further)** &middot;
+**[Documentation](#documentation)** &middot;
+**[Solution](#solution)**
 
 ## Setup
 
-Do this **before the session**. If something fails, ask before the workshop starts.
+Do this **before the session** (or at the very beginning, during the presentation).
+If something fails, please ask before the workshop starts.
 
 <details>
 <summary><b>Install uv, Git and VS Code</b></summary>
 
 ### uv
 
-[uv](https://docs.astral.sh/uv/) installs Python (3.11 to 3.13) and all dependencies for you - no separate Python installation needed.
+[uv](https://docs.astral.sh/uv/) installs Python (3.11 to 3.13) and all dependencies for
+you - no separate Python installation needed.
 
 Follow the one-line installer for your OS here:
 **https://docs.astral.sh/uv/getting-started/installation/**
@@ -89,9 +100,12 @@ uv run kedro info      # prints the Kedro logo
 ## Step 1 - Get familiar with Kedro *(optional)*
 
 > **This step is done live during the presentation.** You don't have to run it yourself -
-> watch, then come back to it later if you want to poke around on your own.
+> watch now, and come back to it later if you want to explore on your own.
 
-The goal here is **not to build anything**. It is to open an already-finished Kedro project, run it, and understand what is going on: where the data is declared, where the settings live, how the steps connect, and what the graph looks like. Once that clicks, Step 4 is mostly typing.
+The goal here is **not to build anything**. It is to open an already-finished Kedro
+project, run it, and understand what is going on: where the data is declared, where the
+settings live, how the steps connect, and what the graph looks like. Once that clicks,
+Step 4 is mostly typing.
 
 We use Kedro's official **Spaceflights** example. Create it **outside** this repository:
 
@@ -99,9 +113,9 @@ We use Kedro's official **Spaceflights** example. Create it **outside** this rep
 cd ..
 uvx kedro new --starter spaceflights-pandas --name spaceflights
 cd spaceflights
-uv sync --group dev
-uv run kedro run
-uv run kedro viz run
+uv sync
+uv run kedro run        # run the project yourself and train the model locally
+uv run kedro viz run    # open Kedro-Viz to see the different components of the project
 ```
 
 <details>
@@ -109,14 +123,15 @@ uv run kedro viz run
 
 | Look at | And ask yourself |
 |---|---|
-| The `kedro run` logs | Nobody wrote this execution order - where does it come from? |
 | `conf/base/catalog.yml` | Every dataset has a **name**, a **type** and a **path**. Notice there is no `read_csv` anywhere in the code. |
 | `conf/base/parameters.yml` | Every setting, named and in one place. No magic numbers in the code. |
 | `src/spaceflights/pipelines/*/nodes.py` | Plain Python functions. No Kedro imports, no file I/O - they could be unit-tested as-is. |
 | `src/spaceflights/pipelines/*/pipeline.py` | Each function wrapped in a `Node` with named `inputs` and `outputs`. **This is the only place the order is implied.** |
+| The `kedro run` logs | Nobody wrote this execution order - where does it come from? |
 | Kedro-Viz at http://127.0.0.1:4141/ | Click a node to see its code. Click a dataset to see its type and path. |
 
-The key idea: the **output name of one node is the input name of the next**. That is it - that is how Kedro builds the graph.
+The key idea: the **output name of one node is the input name of the next**. That is it -
+that is how Kedro builds the graph.
 
 </details>
 
@@ -130,29 +145,38 @@ Come back to the workshop repo:
 cd ../ds-summit-2026-kedro-workshop
 ```
 
-The notebook you inherited. Open it in one of two ways:
+This is our use case for today: a gym churn classification problem.
 
-- **VS Code** - open `notebooks/00_messy_notebook.ipynb`, click **Select Kernel** and pick `.venv`
-- **JupyterLab** - run `uv run jupyter lab`, then open `notebooks/00_messy_notebook.ipynb`
-
-1. Run it top to bottom. The data-loading cell fails - fix it.
-2. Continue until the model trains and the charts appear.
-3. Answer the pinned questions **in your head first**, then open the reveals.
+> **Don't focus on the ML or the data.** The goal is to practise Kedro, not to change the
+> modelling code.
 
 ### The use case - Gym Churn
 
 A Paris gym chain wants to find the members who are about to leave.
 
-- **Target** - `churned = 1` if the member has no check-in in the last 30 days. It is computed from the check-ins; there is no label column in the data.
-- **Features** - built **only** from check-ins older than 30 days (days 31 to 90), so the target never leaks into the inputs.
+- **Target** - `churned = 1` if the member has no check-in in the last 30 days. It is
+  computed from the check-ins; there is no label column in the data.
+- **Features** - built **only** from check-ins older than 30 days (days 31 to 90), so the
+  target never leaks into the inputs.
 - **Model** - random forest, scored with AUC on a 20% test set.
 
-> **Don't focus on the ML.** The point of today is refactoring, not modelling. Do not try to improve the AUC - reproduce it with a clean structure.
+> Do not try to improve the AUC - reproduce it with a clean structure.
+
+Open the notebook you inherited in one of two ways:
+
+- **VS Code** - open `notebooks/00_messy_notebook.ipynb`, click **Select Kernel** and pick `.venv`
+- **JupyterLab** - run `uv run jupyter lab`, then open `notebooks/00_messy_notebook.ipynb`
+
+1. Run it from top to bottom. The data-loading cell fails - fix it (there is a hint in the
+   notebook). As you go, read the code and spot the problems for yourself.
+2. Continue until the model trains and the charts appear.
+3. Answer the pinned questions **in your head first**, then open the reveals.
 
 <details>
 <summary><b>The data - quick look</b></summary>
 
-Synthetic data in `data/01_raw/`. About one member in three churns.
+This is synthetic data created for this workshop, in `data/01_raw/`. About one member in
+three churns.
 
 **`members.csv`** - one row per member (~8,000 members, plus some duplicates)
 
@@ -187,162 +211,91 @@ Synthetic data in `data/01_raw/`. About one member in three churns.
 
 ## Step 3 - Read the clean notebook
 
-Open `notebooks/01_clean_notebook.ipynb`. This one is given to you: the same code refactored into functions, with every path and setting declared at the top, and exactly the same results.
+Open `notebooks/01_clean_notebook.ipynb`. This one is given to you: the same code
+refactored into functions, with every path and setting declared at the top, and exactly
+the same results.
 
-**These functions are your Kedro nodes** - they are already copied into `src/gym_churn/pipelines/<pipeline>/nodes.py`.
+**These functions are your Kedro nodes** - they are already copied into
+`src/gym_churn/pipelines/<pipeline>/nodes.py`. Normally you would clean the notebook
+yourself, but there is no time for that today.
 
 > **🛑 STOP** - do not start Step 4 until it is announced.
 
-## Step 4 - Turn it into a Kedro project
+## Step 4 - Turn it into a Kedro project (your turn)
 
-This repository is your starting point. The node functions are already written - your job is the **configuration and the wiring**, so the project ends up looking like the Kedro-Viz graph shown in the presentation.
+Three pipelines, one worked example, two to build.
 
-| Pipeline | What it does |
-|---|---|
-| `data_processing` | builds the target and the check-in features, cleans and encodes |
-| `model_training` | splits the data and trains the model |
-| `model_evaluation` | computes the AUC and produces the charts |
+| Pipeline | Status | What to do |
+|---|---|---|
+| `data_processing` | Nodes written, 1/4 wired | Add the 3 remaining `Node(...)` blocks in `pipeline.py` by copying the pattern of the first one |
+| `model_training` | Function **signatures** only | Copy the bodies from `notebooks/01_clean_notebook` section 2, then wire the nodes |
+| `model_evaluation` | Function **signatures** only | Same, section 3 |
 
-Three things to do:
+Plus two config files to finish:
 
-1. **Declare the datasets** you want to keep in `conf/base/catalog.yml`
-   *(anything not declared stays in memory and disappears at the end of the run)*
-2. **Move `PROCESSING_CONFIG` and `TRAINING_CONFIG`** from the clean notebook into
-   `conf/base/parameters.yml`
-3. **Wire one `Node` per function** in each `pipeline.py` - every file has TODO hints
+1. `conf/base/catalog.yml` - two datasets are declared, add the rest you want to persist
+2. `conf/base/parameters.yml` - one parameter is declared, add the rest from the notebook
 
 ```sh
-uv run kedro run                               # everything
-uv run kedro run --pipeline=data_processing    # one pipeline
-uv run kedro viz run                           # graph at http://127.0.0.1:4141/
+uv run kedro run --pipeline=data_processing   # test one pipeline at a time
+uv run kedro run                              # everything
+uv run kedro viz run                          # graph at http://127.0.0.1:4141/
 ```
 
-**Done when** `kedro run` completes, `data/08_reporting/metrics.json` contains **AUC = 0.6512**, and `kedro viz run` shows the three pipelines connected end to end.
+**Done when** `uv run kedro run` completes, `data/08_reporting/metrics.json` contains
+**AUC = 0.6512**, and `kedro viz run` shows the three pipelines connected end to end.
 
 <details>
-<summary><b>Hint - suggested order of attack</b></summary>
+<summary><b>Hint - the two things that will trip you up</b></summary>
 
-Don't try to wire everything and then run once. Build it one pipeline at a time:
-
-1. Add the parameters for `data_processing`, wire its 4 nodes, run
-   `uv run kedro run --pipeline=data_processing`. Declare `model_input_table` in the
-   catalog so the next pipeline has something to read.
-2. Add the training parameters, wire `model_training`, run it. Declare the model, and the
-   test split you will need for evaluation.
-3. Wire `model_evaluation`, declare `metrics` and the three plots, then
-   `uv run kedro run` for the whole thing.
-
-After each step, `uv run kedro viz run` and check the graph grew the way you expected.
+- **A function returning several values needs a list of outputs.** `split_data` returns
+  4 values, so `outputs=["X_train", "X_test", "y_train", "y_test"]`. `evaluate_model`
+  returns 3. If the count does not match you get `Failed to save outputs of node ...`.
+- **Running one pipeline alone fails** with `Pipeline input(s) {'...'} not found in the
+  DataCatalog`. That dataset was never written to disk - either declare it in the
+  catalog, or run the whole project.
 
 </details>
-
-<details>
-<summary><b>Hint - two things that will trip you up</b></summary>
-
-- **Running one pipeline alone fails** with `Pipeline input(s) {'...'} not found in the DataCatalog`. That dataset was never written to disk - either declare it in the catalog, or run the whole project with `uv run kedro run`.
-- **`Failed to save outputs of node ...`** means the number of names in `outputs=` does not match the number of values the function returns. **Read the signature in `nodes.py` before wiring** - not every function returns a single object.
-
-</details>
-
-## Quick Reference
-
-**Catalog** - `conf/base/catalog.yml`
-
-```yaml
-members:
-  type: pandas.CSVDataset
-  filepath: data/01_raw/members.csv
-
-checkins:
-  type: pandas.ParquetDataset
-  filepath: data/01_raw/checkins.parquet
-```
-
-**Parameters** - `conf/base/parameters.yml`
-
-```yaml
-churn_window_days: 30
-n_estimators: 200
-```
-
-Used in a node as `"params:churn_window_days"`.
-Nested keys: `"params:training.n_estimators"`, or `"params:training"` to pass the whole dict.
-Override at run time without touching the code:
-
-```sh
-uv run kedro run --params "n_estimators=50,max_depth=5"
-```
-
-**A node** - `pipeline.py`
-
-```python
-from kedro.pipeline import Node, Pipeline
-
-Node(
-    func=build_target,
-    inputs=["members", "checkins", "params:churn_window_days"],
-    outputs="members_with_target",
-    name="build_target_node",
-)
-```
-
-The output name of one node is the input name of the next - that is how Kedro works out the execution order. Several return values means a list of outputs:
-
-```python
-outputs = ["X_train", "X_test", "y_train", "y_test"]
-```
 
 <details>
 <summary><b>Hint - which dataset type for which output</b></summary>
 
 | What | `type` |
 |---|---|
-| DataFrame as CSV | `pandas.CSVDataset` (add `save_args: {index: False}` to drop the index) |
+| DataFrame as CSV | `pandas.CSVDataset` (add `save_args: {index: False}`) |
 | DataFrame as Parquet | `pandas.ParquetDataset` |
 | Any Python object (model, Series) | `pickle.PickleDataset` |
-| Dictionary as JSON | `json.JSONDataset` |
+| Dict as JSON | `json.JSONDataset` |
 | Matplotlib figure as PNG | `matplotlib.MatplotlibDataset` |
 
-Full list - https://docs.kedro.org/projects/kedro-datasets/en/latest/
+Full list: https://docs.kedro.org/projects/kedro-datasets/en/latest/
 
 </details>
 
-<details>
-<summary><b>Hint - useful commands while you work</b></summary>
+Useful while you work:
 
 ```sh
-uv run kedro registry list              # which pipelines Kedro can see
-uv run kedro catalog list               # which datasets Kedro can see
-uv run kedro run --nodes <node_name>    # run a single node
-uv run kedro viz run                    # the graph - your best debugging tool
-uv run kedro jupyter lab                # notebook with catalog, context, pipelines preloaded
+uv run kedro registry list     # which pipelines Kedro can see
+uv run kedro catalog list      # which datasets Kedro can see
+uv run kedro viz run           # the graph - your best debugging tool
 ```
-
-In a `kedro jupyter lab` session you can inspect any declared dataset directly:
-
-```python
-catalog.load("model_input_table").head()
-```
-
-</details>
 
 ## Going Further
 
 Finished early? Pick one.
 
-<details>
-<summary><b>Click to expand</b></summary>
-
-- **Easy - Versioning.** Add `versioned: true` to the model in `catalog.yml`, run twice, and look at what happened in `data/06_models/`. Which problem from the messy notebook does this fix?
-- **Easy - Metrics history.** Version `metrics` as well, run a few times with different `--params`, then compare the files. You now have a record of which settings produced which score.
-- **Medium - Namespaces.** Train the same pipeline twice with two different sets of hyperparameters, and see how it changes the Kedro-Viz graph. Docs - https://docs.kedro.org/en/stable/build/namespaces/
-- **Hard - Deploy Kedro-Viz.** `kedro viz build` produces a static site in `build/` that you can host anywhere: GitHub Pages, Azure Static Web Apps, AWS S3 + CloudFront, GCP Cloud Storage. The **solution repository contains a working example**: the graph is built and published to an **Azure Static Web App**, fully automated with a **GitHub Actions CI/CD workflow** that redeploys on every push to `main`. Use it as a template and deploy yours wherever you like.
-
-</details>
+- **Easy - Versioning.** Add `versioned: true` to the model in `catalog.yml`, run twice,
+  look at `data/06_models/`. Which problem from the messy notebook does this fix?
+- **Easy - Metrics history.** Version `metrics` too, run with different `--params`,
+  compare the files.
+- **Medium - Namespaces.** Wrap each pipeline in a `namespace="..."`. See how the graph
+  changes. Watch out: `outputs=` only exempts datasets consumed by *other* pipelines.
+  Docs: https://docs.kedro.org/en/stable/build/namespaces/
+- **Hard - Deploy Kedro-Viz.** `kedro viz build` makes a static site in `build/` that
+  you can host anywhere. The solution repo has a working GitHub Actions workflow that
+  publishes to an Azure Static Web App on every push to `main`.
 
 ## Documentation
-
-Kedro's docs are short, well written and full of examples - a quick look will get you through the wiring much faster than guessing.
 
 - Kedro concepts - https://docs.kedro.org/en/stable/getting-started/kedro_concepts/
 - Nodes - https://docs.kedro.org/en/stable/build/nodes/
@@ -350,15 +303,13 @@ Kedro's docs are short, well written and full of examples - a quick look will ge
 - Parameters - https://docs.kedro.org/en/stable/configure/parameters/
 - Catalog examples - https://docs.kedro.org/en/stable/catalog-data/data_catalog_yaml_examples/
 - Dataset types - https://docs.kedro.org/projects/kedro-datasets/en/latest/
-- Namespaces - https://docs.kedro.org/en/stable/build/namespaces/
 - Kedro-Viz - https://docs.kedro.org/projects/kedro-viz/en/latest/
 
 ## Solution
 
-The full solution - including the deployed Kedro-Viz graph and its CI/CD workflow - lives at
+The full solution lives at
 **[github.com/labrijisaad/ds-summit-2026-kedro-workshop-solutions](https://github.com/labrijisaad/ds-summit-2026-kedro-workshop-solutions)**.
-
-It is private for now and will be made public **about 30 minutes before the end of the workshop** - try it yourself first.
+Public ~30 minutes before the end of the workshop - try it yourself first.
 
 ## Author
 
@@ -371,6 +322,6 @@ It is private for now and will be made public **about 30 minutes before the end 
 <hr style="border-width:2px;border-color:darkred">
 <div align="center">
 
-**Thanks for coming - and congratulations, you just shipped a prod-ready ML pipeline.**
+**Thanks for coming - and congratulations, you just shipped a production-ready ML pipeline.**
 
 </div>

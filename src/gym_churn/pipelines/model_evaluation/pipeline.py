@@ -1,5 +1,5 @@
 """
-Model evaluation pipeline: trained model + test split -> metrics and plots.
+Model evaluation pipeline: trained model + test split -> metrics + plots.
 """
 
 from kedro.pipeline import Node, Pipeline  # noqa: F401
@@ -13,17 +13,9 @@ from .nodes import (  # noqa: F401
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    return Pipeline(
-        [
-            # TODO: one Node per function in nodes.py.
-            #
-            # Hint: evaluate_model returns THREE values (y_pred, y_proba, metrics)
-            #       so outputs must be a list of three names.
-            #
-            # Hint: plot_roc_curve takes the whole metrics dict, not a bare float.
-            #       Check its signature in nodes.py.
-            #
-            # Hint: the inputs here are the outputs of the model_training pipeline
-            #       (churn_model, X_test, y_test).
-        ]
-    )
+    # TODO: one Node per function in nodes.py.
+    #
+    # Hint 1: evaluate_model returns THREE values -> list of three output names.
+    # Hint 2: plot_roc_curve takes the whole metrics dict (see its signature).
+    # Hint 3: inputs here are the outputs of model_training (churn_model, X_test, y_test).
+    return Pipeline([])

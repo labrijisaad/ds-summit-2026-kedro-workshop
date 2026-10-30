@@ -1,29 +1,26 @@
-"""Model training nodes."""
+"""Model training nodes.
 
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
+The function signatures are given - you fill in the bodies by copying from
+section 2 of notebooks/01_clean_notebook. Nothing clever to invent here.
+"""
+
+from sklearn.ensemble import RandomForestClassifier  # noqa: F401
+from sklearn.model_selection import train_test_split  # noqa: F401
 
 
 def split_data(members, feature_cols, test_size, random_state):
-    X = members[feature_cols]
-    y = members["churned"]
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state
-    )
-    return X_train, X_test, y_train, y_test
+    """80/20 split -> X_train, X_test, y_train, y_test (in that order)."""
+    # TODO: copy the body from the clean notebook.
+    raise NotImplementedError
 
 
 def train_model(X_train, y_train, n_estimators, max_depth, random_state):
-    model = RandomForestClassifier(
-        n_estimators=n_estimators,
-        max_depth=max_depth,
-        random_state=random_state,
-    )
-    model.fit(X_train, y_train)
-    return model
+    """Fit a RandomForestClassifier and return it."""
+    # TODO: copy the body from the clean notebook.
+    raise NotImplementedError
 
 
 def build_test_set(X_test, y_test):
-    test_set = X_test.copy()
-    test_set["churned"] = y_test.values
-    return test_set
+    """Glue X_test and y_test back together so it can be saved as one CSV."""
+    # TODO: copy the body from the clean notebook.
+    raise NotImplementedError
