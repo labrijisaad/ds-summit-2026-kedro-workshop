@@ -213,8 +213,8 @@ refactored into functions, with every path and setting declared at the top, and 
 the same results. Normally you would do this refactoring yourself - today we skip it to
 spend the time on Kedro.
 
-**These functions are your Kedro nodes.** Keep this notebook open during Step 4 - you
-will copy the function bodies out of it:
+**These functions are your Kedro nodes.** Keep this notebook open during Step 4 - you will
+copy the function bodies out of it:
 
 | Notebook section | Goes into |
 |---|---|
@@ -222,15 +222,31 @@ will copy the function bodies out of it:
 | 2. model training | `model_training/nodes.py` - signatures given, bodies are yours |
 | 3. model evaluation | `model_evaluation/nodes.py` - signatures given, bodies are yours |
 
-Also note `INPUTS` / `OUTPUTS` / `PROCESSING_CONFIG` / `TRAINING_CONFIG` at the top -
-every one of those entries has a home in `conf/base/`.
+Also note `INPUTS` / `OUTPUTS` / `PROCESSING_CONFIG` / `TRAINING_CONFIG` at the top - every
+one of those entries has a home in `conf/base/`.
 
 > **🛑 STOP** - do not start Step 4 until it is announced.
 
 ## Step 4 - Turn it into a Kedro project (your turn)
 
-> **Your target** is the Kedro-Viz graph on the slides - take a photo of it if you want.
-> Use it as your reference. Solution will be shared later.
+### Your target
+
+The finished graph is live here - **this is your spec**:
+
+> ### **[→ Open the target Kedro-Viz graph](https://zealous-mushroom-0953eca03.2.azurestaticapps.net/?pid=__default__&expandAllPipelines=false&types=nodes,datasets)**
+
+Keep it open in a second tab. Read off it:
+
+- **node names** and in which pipeline they live
+- **which dataset feeds which node** - that is exactly your `inputs=` / `outputs=`
+- **which parameters** each node consumes (`params:...`)
+- which intermediate datasets exist at all
+
+> **The grey boxes are namespaces - ignore them.** A flat `Pipeline([...])` gives you the
+> same nodes, the same AUC and the same wiring, just without the boxes. Namespaces are the
+> bonus exercise in [Going further](#going-further).
+
+### What to build
 
 Three pipelines, one worked example, two to build.
 
@@ -245,6 +261,10 @@ Plus two config files to finish:
 1. `conf/base/catalog.yml` - two datasets are declared, add the rest you want to persist
 2. `conf/base/parameters.yml` - one parameter is declared, add the rest from the notebook
 
+> **The stub `nodes.py` files have no imports** - only the signatures. When you paste a
+> body in, add the import at the **top of the file**. That is the fix for one of the
+> problems you found in the messy notebook.
+
 ```sh
 uv run kedro run --pipeline=data_processing   # test one pipeline at a time
 uv run kedro run                              # everything
@@ -252,11 +272,22 @@ uv run kedro viz run                          # graph at http://127.0.0.1:4141/
 ```
 
 **Done when** `uv run kedro run` completes, `data/08_reporting/metrics.json` shows
-**AUC = 0.6512**, and `kedro viz run` shows the three pipelines connected end to end.
+**`"auc": 0.6512...`** (first four decimals), and `kedro viz run` shows the three
+pipelines connected end to end.
 
 > Until you wire them, `model_training` and `model_evaluation` are empty and their
 > nodes raise `NotImplementedError`. Both are expected - that is your TODO list,
 > not a broken starter.
+
+### The payoff - run this once it is green
+
+```sh
+uv run kedro run --params "churn_window_days=45"
+```
+
+One number, one command, every node downstream recomputed consistently - target *and*
+features. In the messy notebook that `30` was hardcoded in two different cells. **This is
+the whole point of the workshop.**
 
 <details>
 <summary><b>Hint - the two things that will trip you up</b></summary>
@@ -275,11 +306,19 @@ uv run kedro viz run                          # graph at http://127.0.0.1:4141/
 
 | What | `type` |
 |---|---|
-| DataFrame as CSV | `pandas.CSVDataset` (add `save_args: {index: False}`) |
 | DataFrame as Parquet | `pandas.ParquetDataset` |
+| DataFrame as CSV | `pandas.CSVDataset` (add `save_args: {index: False}`) |
 | Any Python object (model, Series) | `pickle.PickleDataset` |
 | Dict as JSON | `json.JSONDataset` |
 | Matplotlib figure as PNG | `matplotlib.MatplotlibDataset` |
+
+**Use these for the split** - don't improvise here:
+
+| Dataset | Type | Why |
+|---|---|---|
+| `model_input_table` | `pandas.ParquetDataset` | keeps dtypes |
+| `X_train` / `X_test` | `pandas.ParquetDataset` | keeps dtypes |
+| `y_train` / `y_test` | `pickle.PickleDataset` | CSV would turn a Series into a DataFrame and shift your AUC |
 
 Full list: https://docs.kedro.org/projects/kedro-datasets/en/latest/
 
@@ -288,9 +327,9 @@ Full list: https://docs.kedro.org/projects/kedro-datasets/en/latest/
 Useful while you work:
 
 ```sh
-uv run kedro registry list     # which pipelines Kedro can see
-uv run kedro catalog list      # which datasets Kedro can see
-uv run kedro viz run           # the graph - your best debugging tool
+uv run kedro registry list               # which pipelines Kedro can see
+uv run kedro catalog describe-datasets   # which datasets Kedro can see
+uv run kedro viz run                     # the graph - your best debugging tool
 ```
 
 ## Going Further
@@ -301,12 +340,27 @@ Finished early? Pick one.
   look at `data/06_models/`. Which problem from the messy notebook does this fix?
 - **Easy - Metrics history.** Version `metrics` too, run with different `--params`,
   compare the files.
-- **Medium - Namespaces.** Wrap each pipeline in a `namespace="..."`. See how the graph
-  changes. Watch out: `outputs=` only exempts datasets consumed by *other* pipelines.
+- **Medium - Namespaces.** Wrap each pipeline in a `namespace="..."` to get the grey boxes
+  from the target graph:
+
+  ```python
+  return Pipeline(
+      [...],
+      namespace="model_training",
+      prefix_datasets_with_namespace=False,   # node names prefixed, dataset names untouched
+  )
+  ```
+
+  Drop that last argument (the default is `True`) and every internal dataset and
+  parameter gets prefixed too - `model_training.X_train`, `params:model_training.test_size`.
+  Then your catalog keys must match **exactly**, and if they don't, Kedro does **not**
+  error: it silently falls back to a `MemoryDataset` and writes nothing. The only clue is
+  the dataset type in the run log. Worth breaking on purpose once.
   Docs: https://docs.kedro.org/en/stable/build/namespaces/
 - **Hard - Deploy Kedro-Viz.** `kedro viz build` makes a static site in `build/` that
-  you can host anywhere. The solution repo has a working GitHub Actions workflow that
-  publishes to an Azure Static Web App on every push to `main`.
+  you can host anywhere - that is exactly how the target graph above is published. The
+  solution repo has a working GitHub Actions workflow that deploys to an Azure Static Web
+  App on every push to `main`.
 
 ## Documentation
 
@@ -316,6 +370,7 @@ Finished early? Pick one.
 - Parameters - https://docs.kedro.org/en/stable/configure/parameters/
 - Catalog examples - https://docs.kedro.org/en/stable/catalog-data/data_catalog_yaml_examples/
 - Dataset types - https://docs.kedro.org/projects/kedro-datasets/en/latest/
+- Namespaces - https://docs.kedro.org/en/stable/build/namespaces/
 - Kedro-Viz - https://docs.kedro.org/projects/kedro-viz/en/latest/
 
 ## Solution
