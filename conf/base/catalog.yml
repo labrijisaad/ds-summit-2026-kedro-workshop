@@ -16,10 +16,13 @@ checkins:
 # -- TODO ----------------------------------------------------------------------
 # Declare the datasets you want to keep on disk after `kedro run`:
 #
-#   03_primary/     model_input_table  (output of data_processing)
-#   05_model_input/ X_test, y_test     (needed to run model_evaluation alone)
+#   03_primary/     model_input_table   (output of data_processing)
+#   05_model_input/ X_test, y_test      (needed to run model_evaluation alone)
+#   05_model_input/ test_data           (output of build_test_set)
 #   06_models/      churn_model
 #   08_reporting/   metrics (JSON) + 3 PNGs
+#
+# Optional: X_train / y_train too, if you want the whole split on disk.
 #
 # Dataset types you will need:
 #   pandas.ParquetDataset       pandas.CSVDataset

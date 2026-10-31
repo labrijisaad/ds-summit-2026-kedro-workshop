@@ -42,10 +42,7 @@ Four steps - click to jump.
 `kedro viz run` shows the full graph. If you finish early, there are extra challenges in
 [Going further](#going-further).
 
-Also useful: **[Quick Kedro reference](#quick-kedro-reference)** &middot;
-**[Going further](#going-further)** &middot;
-**[Documentation](#documentation)** &middot;
-**[Solution](#solution)**
+Also useful: **[Going further](#going-further)** &middot; **[Documentation](#documentation)** &middot; **[Solution](#solution)**
 
 ## Setup
 
@@ -213,15 +210,27 @@ three churns.
 
 Open `notebooks/01_clean_notebook.ipynb`. This one is given to you: the same code
 refactored into functions, with every path and setting declared at the top, and exactly
-the same results.
+the same results. Normally you would do this refactoring yourself - today we skip it to
+spend the time on Kedro.
 
-**These functions are your Kedro nodes** - they are already copied into
-`src/gym_churn/pipelines/<pipeline>/nodes.py`. Normally you would clean the notebook
-yourself, but there is no time for that today.
+**These functions are your Kedro nodes.** Keep this notebook open during Step 4 - you
+will copy the function bodies out of it:
+
+| Notebook section | Goes into |
+|---|---|
+| 1. data processing | `data_processing/nodes.py` - **already done for you** |
+| 2. model training | `model_training/nodes.py` - signatures given, bodies are yours |
+| 3. model evaluation | `model_evaluation/nodes.py` - signatures given, bodies are yours |
+
+Also note `INPUTS` / `OUTPUTS` / `PROCESSING_CONFIG` / `TRAINING_CONFIG` at the top -
+every one of those entries has a home in `conf/base/`.
 
 > **🛑 STOP** - do not start Step 4 until it is announced.
 
 ## Step 4 - Turn it into a Kedro project (your turn)
+
+> **Your target** is the Kedro-Viz graph on the slides - take a photo of it if you want.
+> Use it as your reference. Solution will be shared later.
 
 Three pipelines, one worked example, two to build.
 
@@ -242,8 +251,12 @@ uv run kedro run                              # everything
 uv run kedro viz run                          # graph at http://127.0.0.1:4141/
 ```
 
-**Done when** `uv run kedro run` completes, `data/08_reporting/metrics.json` contains
+**Done when** `uv run kedro run` completes, `data/08_reporting/metrics.json` shows
 **AUC = 0.6512**, and `kedro viz run` shows the three pipelines connected end to end.
+
+> Until you wire them, `model_training` and `model_evaluation` are empty and their
+> nodes raise `NotImplementedError`. Both are expected - that is your TODO list,
+> not a broken starter.
 
 <details>
 <summary><b>Hint - the two things that will trip you up</b></summary>

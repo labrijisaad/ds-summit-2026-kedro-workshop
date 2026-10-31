@@ -28,7 +28,7 @@ def plot_roc_curve(y_test, y_proba, metrics):
     Note: this takes the whole `metrics` dict, not a bare float - a node can
     only consume datasets produced by other nodes, not an attribute of one.
     """
-    # TODO: copy the body from the clean notebook (read `auc` from metrics["auc"]).
+    # TODO: copy the body from the clean notebook.
     raise NotImplementedError
 
 

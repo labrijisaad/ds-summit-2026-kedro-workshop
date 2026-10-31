@@ -744,10 +744,10 @@ requires-dist = [
     { name = "kedro", specifier = ">=1.7.0" },
     { name = "kedro-datasets", specifier = ">=9.6.0" },
     { name = "kedro-viz", specifier = ">=12.5.0" },
-    { name = "matplotlib" },
-    { name = "pandas" },
-    { name = "pyarrow" },
-    { name = "scikit-learn" },
+    { name = "matplotlib", specifier = ">=3.8" },
+    { name = "pandas", specifier = ">=2.2" },
+    { name = "pyarrow", specifier = ">=16" },
+    { name = "scikit-learn", specifier = ">=1.5,<2" },
 ]
 
 [package.metadata.requires-dev]

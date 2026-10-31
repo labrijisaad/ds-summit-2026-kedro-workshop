@@ -18,11 +18,11 @@ dependencies = [
     "kedro-datasets>=9.6.0",   # pandas, pickle, json, matplotlib dataset types
     "kedro-viz>=12.5.0",       # pipeline graph at http://127.0.0.1:4141/
 
-    # data & ml
-    "pandas",
-    "pyarrow",                 # required for parquet support
-    "matplotlib",
-    "scikit-learn",
+    # data & ml : pinned for reproducibility of AUC
+    "pandas>=2.2",
+    "pyarrow>=16",                 # required for parquet support
+    "matplotlib>=3.8",
+    "scikit-learn>=1.5,<2",
 ]
 
 # Dev dependencies  ->  uv sync --group dev
@@ -40,8 +40,6 @@ dev = [
 
 [project.scripts]
 gym-churn = "gym_churn.__main__:main"
-
-[project.entry-points."kedro.hooks"]
 
 [tool.setuptools.dynamic.version]
 attr = "gym_churn.__version__"
