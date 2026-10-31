@@ -30,13 +30,13 @@ automated retraining in production.
 
 Four steps - click to jump.
 
-| | Step | What you do | Time |
-|---|---|---|---|
-| 0 | **[Setup](#setup)** | Install `uv`, clone the repo, run `uv sync` - **before the session** | before |
-| 1 | **[Get familiar with Kedro](#step-1---get-familiar-with-kedro-optional)** *(optional)* | Explore a ready-made Kedro project - shown live during the presentation | ~10 min |
-| 2 | **[Run the messy notebook](#step-2---run-the-messy-notebook)** | The model you inherited. Make it run, and spot what would break in production | ~10 min |
-| 3 | **[Read the clean notebook](#step-3---read-the-clean-notebook)** | The same code, split into functions. These become your Kedro nodes. Normally you would do this refactoring yourself, but today we want to spend the time on Kedro | ~5 min |
-| 4 | **[Turn it into a Kedro project](#step-4---turn-it-into-a-kedro-project)** | Fill in the catalog, the parameters and the three pipelines, then open Kedro-Viz | ~30 min |
+| | Step | What you do |
+|---|---|---|
+| 0 | **[Setup](#setup)** | Install `uv`, clone the repo, run `uv sync` - **before the session** |
+| 1 | **[Get familiar with Kedro](#step-1---get-familiar-with-kedro-optional)** *(optional)* | Explore a ready-made Kedro project - shown live during the presentation |
+| 2 | **[Run the messy notebook](#step-2---run-the-messy-notebook)** | The model you inherited. Make it run, and spot what would break in production |
+| 3 | **[Read the clean notebook](#step-3---read-the-clean-notebook)** | The same code, split into functions. These become your Kedro nodes. Normally you would do this refactoring yourself, but today we want to spend the time on Kedro |
+| 4 | **[Turn it into a Kedro project](#step-4---turn-it-into-a-kedro-project)** | Fill in the catalog, the parameters and the three pipelines, then open Kedro-Viz |
 
 **The main workshop is done when** `kedro run` reproduces the notebook's AUC and
 `kedro viz run` shows the full graph. If you finish early, there are extra challenges in
