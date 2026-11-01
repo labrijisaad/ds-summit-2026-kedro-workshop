@@ -1,0 +1,20 @@
+# Every setting the pipelines use. Read in a node as "params:<name>".
+# Was PROCESSING_CONFIG and TRAINING_CONFIG in notebooks/01_clean_notebook.
+
+# -- data_processing -----------------------------------------------------------
+# This one is already done - copy the pattern for the rest.
+
+churn_window_days: 30
+
+# TODO: add fill_values and cat_cols from PROCESSING_CONFIG.
+# fill_values is a dict -> in YAML:
+#   fill_values:
+#     contract_type: Monthly
+
+# -- model_training ------------------------------------------------------------
+# TODO: add test_size, random_state, n_estimators, max_depth, feature_cols
+# from TRAINING_CONFIG in the clean notebook.
+#
+# feature_cols is also used by model_evaluation (feature importance plot) -
+# define it once here and both pipelines read it. That is the fix for the
+# duplicated column list in the messy notebook.

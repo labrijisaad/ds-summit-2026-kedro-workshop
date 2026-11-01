@@ -1,0 +1,34 @@
+# Every dataset the pipelines read or write.
+# Anything NOT declared here lives in memory and vanishes at the end of a run.
+# Docs: https://docs.kedro.org/en/stable/catalog-data/data_catalog_yaml_examples/
+
+# -- 01_raw --------------------------------------------------------------------
+# These two are already done - this is the pattern to copy for the rest.
+
+members:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/members.csv
+
+checkins:
+  type: pandas.ParquetDataset
+  filepath: data/01_raw/checkins.parquet
+
+# -- TODO ----------------------------------------------------------------------
+# Declare the datasets you want to keep on disk after `kedro run`:
+#
+#   03_primary/     model_input_table   (output of data_processing)
+#   05_model_input/ X_test, y_test      (needed to run model_evaluation alone)
+#   05_model_input/ test_data           (output of build_test_set)
+#   06_models/      churn_model
+#   08_reporting/   metrics (JSON) + 3 PNGs
+#
+# Optional: X_train / y_train too, if you want the whole split on disk.
+#
+# Dataset types you will need:
+#   pandas.ParquetDataset       pandas.CSVDataset
+#   pickle.PickleDataset        json.JSONDataset
+#   matplotlib.MatplotlibDataset
+#
+# For CSV outputs add:
+#   save_args:
+#     index: False
