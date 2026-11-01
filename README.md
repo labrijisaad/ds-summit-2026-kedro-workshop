@@ -32,11 +32,11 @@ Four steps - click to jump.
 
 | | Step | What you do |
 |---|---|---|
-| 0 | **[Setup](#setup)** | Install `uv`, clone the repo, run `uv sync` - **before the session** |
-| 1 | **[Get familiar with Kedro](#step-1---get-familiar-with-kedro-optional)** *(optional)* | Explore a ready-made Kedro project - shown live during the presentation |
-| 2 | **[Run the messy notebook](#step-2---run-the-messy-notebook)** | The model you inherited. Make it run, and spot what would break in production |
-| 3 | **[Read the clean notebook](#step-3---read-the-clean-notebook)** | The same code, split into functions. These become your Kedro nodes. Normally you would do this refactoring yourself, but today we want to spend the time on Kedro |
-| 4 | **[Turn it into a Kedro project](#step-4---turn-it-into-a-kedro-project)** | Fill in the catalog, the parameters and the three pipelines, then open Kedro-Viz |
+| 0 | Setup | Install `uv`, clone the repo, run `uv sync` - **before the session** |
+| 1 | Get familiar with Kedro *(optional)* | Explore a ready-made Kedro project - shown live during the presentation |
+| 2 | Run the messy notebook | The model you inherited. Make it run, and spot what would break in production |
+| 3 | Read the clean notebook | The same code, split into functions. These become your Kedro nodes. Normally you would do this refactoring yourself, but today we want to spend the time on Kedro |
+| 4 | Turn it into a Kedro project | Fill in the catalog, the parameters and the three pipelines, then open Kedro-Viz |
 
 **The main workshop is done when** `kedro run` reproduces the notebook's AUC and
 `kedro viz run` shows the full graph. If you finish early, there are extra challenges in
@@ -233,7 +233,7 @@ one of those entries has a home in `conf/base/`.
 
 The finished graph is live here - **this is your spec**:
 
-> ### **[→ Open the target Kedro-Viz graph](https://zealous-mushroom-0953eca03.2.azurestaticapps.net/?pid=__default__&expandAllPipelines=false&types=nodes,datasets)**
+> ### **[→ Open the target Kedro-Viz graph  ←](https://zealous-mushroom-0953eca03.2.azurestaticapps.net/?pid=__default__&expandAllPipelines=false&types=nodes,datasets)**
 
 Keep it open in a second tab. Read off it:
 
@@ -390,6 +390,6 @@ Public ~30 minutes before the end of the workshop - try it yourself first.
 <hr style="border-width:2px;border-color:darkred">
 <div align="center">
 
-**Thanks for coming - and congratulations, you just shipped a production-ready ML pipeline.**
+**Thanks for coming - and congratulations, you just shipped a prod-ready ML pipeline.**
 
 </div>
